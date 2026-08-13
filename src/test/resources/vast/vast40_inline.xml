@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<VAST version="4.2" xmlns="http://www.iab.com/VAST">
+  <Ad id="v4" sequence="1">
+    <InLine>
+      <AdSystem version="1.0">CTV</AdSystem>
+      <AdTitle>VAST4</AdTitle>
+      <Impression id="imp1"><![CDATA[https://example.com/imp4]]></Impression>
+      <ViewableImpression id="view1">
+        <Viewable><![CDATA[https://example.com/viewable]]></Viewable>
+        <NotViewable><![CDATA[https://example.com/not-viewable]]></NotViewable>
+      </ViewableImpression>
+      <Category authority="IAB">IAB1-1</Category>
+      <Creatives>
+        <Creative id="c1" UniversalAdId="foo/bar">
+          <UniversalAdId idRegistry="foo">bar</UniversalAdId>
+          <Linear skipoffset="00:00:03">
+            <Duration>00:00:10</Duration>
+            <TrackingEvents>
+              <Tracking event="start"><![CDATA[https://example.com/start4]]></Tracking>
+            </TrackingEvents>
+            <MediaFiles>
+              <MediaFile delivery="progressive" type="video/mp4" width="1920" height="1080">
+                <![CDATA[https://example.com/v4.mp4]]>
+              </MediaFile>
+              <Mezzanine delivery="progressive" type="video/mp4" width="3840" height="2160">
+                <![CDATA[https://example.com/mezz.mp4]]>
+              </Mezzanine>
+            </MediaFiles>
+          </Linear>
+        </Creative>
+        <Creative>
+          <CompanionAds>
+            <Companion width="300" height="250">
+              <StaticResource creativeType="image/png">
+                <![CDATA[https://example.com/comp4.png]]>
+              </StaticResource>
+            </Companion>
+          </CompanionAds>
+        </Creative>
+      </Creatives>
+      <Extensions>
+        <Extension type="nroa_inform">
+          <Erid><![CDATA[ERID42]]></Erid>
+        </Extension>
+      </Extensions>
+      <AdVerifications>
+        <Verification vendor="example">
+          <JavaScriptResource><![CDATA[https://example.com/omid.js]]></JavaScriptResource>
+        </Verification>
+      </AdVerifications>
+    </InLine>
+  </Ad>
+</VAST>

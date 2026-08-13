@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<VAST version="4.2">
+  <Ad>
+    <InLine>
+      <AdSystem>test</AdSystem>
+      <AdTitle>macros</AdTitle>
+      <Impression><![CDATA[https://example.com/imp?ifa=[IFA]&lmt=[LIMITADTRACKING]&cb=[CACHEBUSTING]]]></Impression>
+      <Error><![CDATA[https://example.com/error?ifa=${IFA}]]></Error>
+      <Creatives>
+        <Creative>
+          <Linear>
+            <Duration>00:00:10</Duration>
+            <TrackingEvents>
+              <Tracking event="start"><![CDATA[https://example.com/start?ua=${USER_AGENT}&app=${APPBUNDLE}]]></Tracking>
+            </TrackingEvents>
+            <VideoClicks>
+              <ClickThrough><![CDATA[https://example.com/land?ifa=[IFA]]]></ClickThrough>
+              <ClickTracking><![CDATA[https://example.com/click?cb=[CACHEBUSTING]]]></ClickTracking>
+            </VideoClicks>
+            <MediaFiles>
+              <MediaFile type="video/mp4" width="1280" height="720" delivery="progressive">
+                <![CDATA[https://example.com/ad.mp4?ifa=${IFA}]]>
+              </MediaFile>
+            </MediaFiles>
+          </Linear>
+        </Creative>
+      </Creatives>
+    </InLine>
+  </Ad>
+</VAST>

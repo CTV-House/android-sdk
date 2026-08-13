@@ -1,0 +1,145 @@
+CTV House Android SDK
+Лицензионное соглашение / License Agreement
+
+Copyright (c) 2026 CTV House. Все права защищены. All rights reserved.
+
+================================================================================
+РУССКАЯ ВЕРСИЯ (имеет преимущественную силу)
+================================================================================
+
+1. ОПРЕДЕЛЕНИЯ
+
+1.1. «Правообладатель» — CTV House, обладатель исключительных прав на ПО.
+1.2. «ПО» — программное обеспечение «CTV House Android SDK»: исходный код,
+     собранные артефакты, документация и любые их части и производные.
+1.3. «Пользователь» — лицо, получившее доступ к ПО на условиях настоящего
+     соглашения.
+1.4. «Коммерческое использование» — любое использование ПО, прямо или косвенно
+     направленное на получение дохода или иной экономической выгоды, в том числе
+     показ рекламы конечным пользователям, применение в приложениях, доступ к
+     которым или функции которых оплачиваются, а также использование в интересах
+     третьих лиц на возмездной основе.
+
+2. ПРЕДОСТАВЛЯЕМЫЕ ПРАВА
+
+2.1. Правообладатель безвозмездно разрешает Пользователю воспроизводить,
+     изучать, устанавливать, запускать и изменять ПО исключительно в
+     некоммерческих целях: ознакомление, оценка пригодности, обучение,
+     исследование, разработка и тестирование.
+2.2. Право предоставляется на условиях простой (неисключительной) лицензии, без
+     права передачи третьим лицам.
+
+3. ОГРАНИЧЕНИЯ
+
+3.1. Коммерческое использование ПО допускается только Правообладателем.
+     Иное лицо вправе использовать ПО в коммерческих целях исключительно при
+     наличии отдельного письменного соглашения с Правообладателем.
+3.2. Запрещается распространять, публиковать, передавать, сублицензировать,
+     продавать, сдавать в аренду ПО или предоставлять к нему доступ третьим
+     лицам, включая размещение в публичных репозиториях и магазинах приложений.
+3.3. Запрещается удалять или изменять уведомления об авторских правах и текст
+     настоящего соглашения.
+3.4. Запрещается декомпиляция и обратное проектирование сверх пределов, прямо
+     разрешённых применимым законодательством.
+3.5. Настоящее соглашение не предоставляет прав на товарные знаки, знаки
+     обслуживания и фирменное наименование Правообладателя.
+
+4. ПРАВА НА ПО
+
+Исключительные права на ПО принадлежат Правообладателю. Настоящее соглашение не
+влечёт их отчуждения. Все права, прямо не предоставленные пунктом 2, сохраняются
+за Правообладателем.
+
+5. ОТСУТСТВИЕ ГАРАНТИЙ
+
+ПО предоставляется «КАК ЕСТЬ», без каких-либо гарантий, явных или
+подразумеваемых, включая гарантии пригодности для конкретных целей,
+работоспособности и ненарушения прав третьих лиц.
+
+6. ОГРАНИЧЕНИЕ ОТВЕТСТВЕННОСТИ
+
+Правообладатель не несёт ответственности за любые убытки, включая упущенную
+выгоду, утрату данных и перерывы в работе, возникшие в связи с использованием
+или невозможностью использования ПО.
+
+7. ПРЕКРАЩЕНИЕ
+
+При нарушении любого условия настоящего соглашения предоставленные права
+прекращаются автоматически, без уведомления. Пользователь обязан прекратить
+использование ПО и удалить все его копии.
+
+8. ПРИМЕНИМОЕ ПРАВО
+
+К настоящему соглашению применяется законодательство Российской Федерации.
+
+9. КОММЕРЧЕСКАЯ ЛИЦЕНЗИЯ
+
+Условия коммерческого использования согласовываются отдельно. Запросы
+направляются Правообладателю: https://github.com/CTV-House
+
+================================================================================
+ENGLISH VERSION (translation; the Russian version prevails)
+================================================================================
+
+1. DEFINITIONS
+
+1.1. "Licensor" means CTV House, the holder of exclusive rights to the Software.
+1.2. "Software" means the CTV House Android SDK: source code, build artifacts,
+     documentation, and any part or derivative thereof.
+1.3. "User" means any person granted access to the Software under this agreement.
+1.4. "Commercial use" means any use of the Software directed, directly or
+     indirectly, at revenue or other economic benefit, including serving
+     advertising to end users, use in paid applications or paid features, and
+     use for the benefit of third parties for a fee.
+
+2. GRANT
+
+2.1. The Licensor grants the User, free of charge, the right to reproduce,
+     study, install, run, and modify the Software solely for non-commercial
+     purposes: review, evaluation, education, research, development, and testing.
+2.2. The grant is non-exclusive and non-transferable.
+
+3. RESTRICTIONS
+
+3.1. Commercial use of the Software is reserved to the Licensor. Any other party
+     may use the Software commercially only under a separate written agreement
+     with the Licensor.
+3.2. Distribution, publication, transfer, sublicensing, sale, rental, or
+     provision of access to third parties is prohibited, including publication
+     in public repositories and application stores.
+3.3. Copyright notices and this agreement may not be removed or altered.
+3.4. Decompilation and reverse engineering are prohibited beyond the limits
+     expressly permitted by applicable law.
+3.5. No rights to trademarks, service marks, or the trade name of the Licensor
+     are granted.
+
+4. OWNERSHIP
+
+Exclusive rights to the Software remain with the Licensor. This agreement
+transfers no ownership. All rights not expressly granted in Section 2 are
+reserved.
+
+5. NO WARRANTY
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING WARRANTIES OF FITNESS FOR A PARTICULAR PURPOSE,
+MERCHANTABILITY, AND NON-INFRINGEMENT.
+
+6. LIMITATION OF LIABILITY
+
+THE LICENSOR SHALL NOT BE LIABLE FOR ANY DAMAGES, INCLUDING LOST PROFITS, LOSS
+OF DATA, OR BUSINESS INTERRUPTION, ARISING OUT OF THE USE OF OR INABILITY TO USE
+THE SOFTWARE.
+
+7. TERMINATION
+
+The rights granted terminate automatically, without notice, upon breach of any
+term of this agreement. The User must then cease all use and delete all copies.
+
+8. GOVERNING LAW
+
+This agreement is governed by the laws of the Russian Federation.
+
+9. COMMERCIAL LICENSING
+
+Commercial terms are agreed separately. Requests: https://github.com/CTV-House

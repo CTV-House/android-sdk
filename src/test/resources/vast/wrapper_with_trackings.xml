@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<VAST version="3.0">
+  <Error><![CDATA[https://example.com/vast-error]]></Error>
+  <Ad id="wrap">
+    <Wrapper followAdditionalWrappers="true">
+      <Error><![CDATA[https://example.com/wrapper-error]]></Error>
+      <Impression><![CDATA[https://example.com/wrapper-imp]]></Impression>
+      <VASTAdTagURI><![CDATA[https://example.com/inline.xml]]></VASTAdTagURI>
+      <Creatives>
+        <Creative>
+          <Linear>
+            <TrackingEvents>
+              <Tracking event="start"><![CDATA[https://example.com/wrapper-start]]></Tracking>
+              <Tracking event="skip"><![CDATA[https://example.com/wrapper-skip]]></Tracking>
+            </TrackingEvents>
+          </Linear>
+        </Creative>
+      </Creatives>
+    </Wrapper>
+  </Ad>
+</VAST>

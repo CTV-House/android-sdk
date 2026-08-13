@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<VAST version="4.2">
+  <Ad>
+    <InLine>
+      <AdSystem>test</AdSystem>
+      <AdTitle>tracking</AdTitle>
+      <Impression><![CDATA[https://example.com/imp]]></Impression>
+      <Error><![CDATA[https://example.com/error]]></Error>
+      <ViewableImpression>
+        <Viewable><![CDATA[https://example.com/viewable]]></Viewable>
+        <NotViewable><![CDATA[https://example.com/not-viewable]]></NotViewable>
+      </ViewableImpression>
+      <Creatives>
+        <Creative>
+          <Linear skipoffset="00:00:05">
+            <Duration>00:00:10</Duration>
+            <TrackingEvents>
+              <Tracking event="creativeView"><![CDATA[https://example.com/cview]]></Tracking>
+              <Tracking event="loaded"><![CDATA[https://example.com/loaded]]></Tracking>
+              <Tracking event="start"><![CDATA[https://example.com/start]]></Tracking>
+              <Tracking event="firstQuartile"><![CDATA[https://example.com/q1]]></Tracking>
+              <Tracking event="midpoint"><![CDATA[https://example.com/mid]]></Tracking>
+              <Tracking event="thirdQuartile"><![CDATA[https://example.com/q3]]></Tracking>
+              <Tracking event="complete"><![CDATA[https://example.com/complete]]></Tracking>
+              <Tracking event="closeLinear"><![CDATA[https://example.com/closelinear]]></Tracking>
+              <Tracking event="close"><![CDATA[https://example.com/close]]></Tracking>
+              <Tracking event="skip"><![CDATA[https://example.com/skip]]></Tracking>
+              <Tracking event="mute"><![CDATA[https://example.com/mute]]></Tracking>
+              <Tracking event="unmute"><![CDATA[https://example.com/unmute]]></Tracking>
+              <Tracking event="pause"><![CDATA[https://example.com/pause]]></Tracking>
+              <Tracking event="resume"><![CDATA[https://example.com/resume]]></Tracking>
+              <Tracking event="overlayViewDuration">
+                <![CDATA[https://example.com/ovd]]>
+              </Tracking>
+              <Tracking event="progress" offset="00:00:03">
+                <![CDATA[https://example.com/p3]]>
+              </Tracking>
+              <Tracking event="progress" offset="80%">
+                <![CDATA[https://example.com/p80]]>
+              </Tracking>
+            </TrackingEvents>
+            <VideoClicks>
+              <ClickThrough><![CDATA[https://example.com/land]]></ClickThrough>
+              <ClickTracking><![CDATA[https://example.com/click]]></ClickTracking>
+            </VideoClicks>
+            <MediaFiles>
+              <MediaFile type="video/mp4" width="1280" height="720" delivery="progressive">
+                <![CDATA[https://example.com/ad.mp4]]>
+              </MediaFile>
+            </MediaFiles>
+          </Linear>
+        </Creative>
+      </Creatives>
+    </InLine>
+  </Ad>
+</VAST>

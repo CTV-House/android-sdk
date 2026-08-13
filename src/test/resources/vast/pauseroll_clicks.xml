@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<VAST version="3.0">
+  <Ad id="1">
+    <InLine>
+      <Impression><![CDATA[https://example.com/imp]]></Impression>
+      <Creatives>
+        <Creative>
+          <Linear skipoffset="00:00:05">
+            <Duration>00:00:10</Duration>
+            <TrackingEvents>
+              <Tracking event="start"><![CDATA[https://example.com/start]]></Tracking>
+            </TrackingEvents>
+            <VideoClicks>
+              <ClickThrough><![CDATA[https://example.com/linear-land]]></ClickThrough>
+              <ClickTracking><![CDATA[https://example.com/linear-click]]></ClickTracking>
+            </VideoClicks>
+            <MediaFiles>
+              <MediaFile delivery="progressive" type="video/mp4" width="1920" height="1080">
+                <![CDATA[https://example.com/ad.mp4]]>
+              </MediaFile>
+            </MediaFiles>
+          </Linear>
+        </Creative>
+        <Creative>
+          <CompanionAds>
+            <Companion width="1920" height="1080">
+              <StaticResource creativeType="image/jpeg">
+                <![CDATA[https://example.com/companion.jpg]]>
+              </StaticResource>
+              <CompanionClickThrough><![CDATA[https://example.com/companion-land]]></CompanionClickThrough>
+              <CompanionClickTracking><![CDATA[https://example.com/companion-click]]></CompanionClickTracking>
+            </Companion>
+          </CompanionAds>
+        </Creative>
+      </Creatives>
+    </InLine>
+  </Ad>
+</VAST>

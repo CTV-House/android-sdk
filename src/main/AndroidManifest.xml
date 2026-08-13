@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <!--
+      No components, no content providers, nothing that runs before the host calls us.
+      Three permissions, all install-time, none of which prompts the viewer:
+        INTERNET             - fetching markup, creatives and firing trackers;
+        ACCESS_NETWORK_STATE - the connection type ad servers ask for as a macro;
+        AD_ID                - reading the resettable advertising ID on Android 13+.
+      A host under the Families policy can drop the ad ID with
+      <uses-permission android:name="com.google.android.gms.permission.AD_ID"
+          tools:node="remove" /> — the library then reports no ID and limited tracking.
+    -->
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="com.google.android.gms.permission.AD_ID" />
+
+    <!-- Package visibility for the advertising-ID service on Android 11+. -->
+    <queries>
+        <package android:name="com.google.android.gms" />
+    </queries>
+
+</manifest>

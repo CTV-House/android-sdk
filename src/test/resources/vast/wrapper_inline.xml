@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<VAST version="3.0">
+  <Error><![CDATA[https://example.com/inline-doc-error]]></Error>
+  <Ad id="1">
+    <InLine>
+      <Error><![CDATA[https://example.com/inline-error]]></Error>
+      <Impression><![CDATA[https://example.com/inline-imp]]></Impression>
+      <Creatives>
+        <Creative>
+          <Linear skipoffset="00:00:05">
+            <Duration>00:00:10</Duration>
+            <TrackingEvents>
+              <Tracking event="start"><![CDATA[https://example.com/inline-start]]></Tracking>
+              <Tracking event="complete"><![CDATA[https://example.com/inline-complete]]></Tracking>
+              <Tracking event="progress" offset="00:00:03"><![CDATA[https://example.com/progress-3s]]></Tracking>
+            </TrackingEvents>
+            <MediaFiles>
+              <MediaFile delivery="progressive" type="video/mp4" width="1920" height="1080">
+                <![CDATA[https://example.com/ad.mp4]]>
+              </MediaFile>
+            </MediaFiles>
+          </Linear>
+        </Creative>
+      </Creatives>
+    </InLine>
+  </Ad>
+</VAST>
