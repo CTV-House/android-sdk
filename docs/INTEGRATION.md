@@ -289,13 +289,13 @@ Three pieces sit independently, each with its own corner (horizontal × vertical
 
 | Piece | Default | Contents |
 |---|---|---|
-| playback group | left × bottom | logo, info, mute, pause |
-| marking | left × top | ad-marking chip |
+| playback group | left × bottom | info, mute, pause |
+| marking | left × top | brand mark + ad-marking chip |
 | skip | right × top | skip countdown / skip |
 
 Mute and pause appear for a linear creative, and while a soundtrack plays under a banner.
 Info appears when the creative has an http(s) `ClickThrough`. A banner keeps marking, skip,
-the logo, and info when a landing URL exists. Chrome is shown together with the creative, not
+and info when a landing URL exists. Chrome is shown together with the creative, not
 while the media is still buffering.
 Tapping mute or pause fires the VAST `mute` / `unmute` / `pause` / `resume` trackers the same
 way a player event would. Tapping info opens a QR of the ClickThrough and pings `ClickTracking`.
@@ -304,9 +304,9 @@ The chrome is built for a D-pad: the overlay itself does not take focus, skip st
 chain during the countdown, and a focused control turns white. From pause, the remote can
 reach skip even when it sits in another corner.
 
-The brand mark is in the playback group, the same size as the other action buttons. It is on
-by default; `setLogoVisible(false)` hides it. Info, pause and mute can be hidden the same way
-with `setInfoVisible` / `setPauseVisible` / `setMuteVisible`.
+The brand mark sits in the ad-marking chip, to the left of the label. It is on by default;
+`setLogoVisible(false)` hides the icon and leaves the marking text. Info, pause and mute can be
+hidden with `setInfoVisible` / `setPauseVisible` / `setMuteVisible`.
 
 ## 8. Configuration
 
@@ -325,10 +325,10 @@ the same set. Sound may also be passed to the constructor.
 | `setSkipOffsetSeconds` | VAST `skipoffset`, else `5` | |
 | `setDismissOnCreativeEnd` | `true` | `false` holds the creative until skip or `close` |
 | `setBannerDurationSeconds` | `0` | time on screen for a still the response does not time |
-| `setControlsPosition` | left × bottom | playback group: logo / info / mute / pause |
+| `setControlsPosition` | left × bottom | playback group: info / mute / pause |
 | `setMarkingPosition` | left × top | ad-marking chip |
 | `setSkipPosition` | right × top | skip chip |
-| `setLogoVisible` | `true` | brand mark in the action group |
+| `setLogoVisible` | `true` | brand mark in the marking chip |
 | `setBackdropVisible` | `false` | `true` paints a black fill under the creative |
 | `setInfoVisible` | `true` | QR of the ClickThrough; still hidden without a landing URL |
 | `setPauseVisible` | `true` | pause of the linear creative; still hidden for a banner |

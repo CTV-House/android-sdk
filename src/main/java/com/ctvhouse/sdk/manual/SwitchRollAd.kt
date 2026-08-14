@@ -151,7 +151,7 @@ class SwitchRollAd private constructor(
     }
 
     /**
-     * Corner for the playback group (logo, info, mute, pause).
+     * Corner for the playback group (info, mute, pause).
      * Default is left × bottom. Mute and pause only appear for a linear creative.
      * Info appears when the creative has an http(s) ClickThrough.
      */
@@ -181,7 +181,7 @@ class SwitchRollAd private constructor(
         return this
     }
 
-    /** Brand mark in the action group. On by default; pass false to hide it. */
+    /** Brand mark inside the ad-marking chip. On by default; pass false to hide the icon only. */
     fun setLogoVisible(visible: Boolean): SwitchRollAd {
         format.setLogoVisible(visible)
         return this

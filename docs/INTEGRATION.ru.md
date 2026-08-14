@@ -281,12 +281,12 @@ Skip отправляет VAST-трекеры `skip` и `onSkip(urls)`. Библ
 
 | Кусок | По умолчанию | Содержимое |
 |---|---|---|
-| группа воспроизведения | слева × снизу | логотип, info, mute, pause |
-| маркировка | слева × сверху | чип «РЕКЛАМА» |
+| группа воспроизведения | слева × снизу | info, mute, pause |
+| маркировка | слева × сверху | логотип + чип «РЕКЛАМА» |
 | skip | справа × сверху | отсчёт / пропуск |
 
 Звук и пауза появляются у linear-креатива и пока под баннером играет саундтрек. Info — когда
-у креатива есть http(s) `ClickThrough`. У баннера остаются маркировка, skip, логотип и info,
+у креатива есть http(s) `ClickThrough`. У баннера остаются маркировка (с логотипом), skip и info,
 если есть посадочный URL.
 Контролы появляются вместе с креативом, а не пока медиа ещё буферизуется.
 Нажатие mute или pause отправляет VAST-трекеры `mute` / `unmute` / `pause` / `resume` так же,
@@ -296,8 +296,8 @@ Skip отправляет VAST-трекеры `skip` и `onSkip(urls)`. Библ
 отсчёта, сфокусированный контрол становится белым. С pause пульт дотягивается до skip, даже
 если тот в другом углу.
 
-Логотип в группе воспроизведения, того же размера, что остальные кнопки. По умолчанию виден;
-`setLogoVisible(false)` скрывает его. Info, pause и mute скрываются так же:
+Логотип стоит в чипе маркировки слева от текста. По умолчанию виден;
+`setLogoVisible(false)` убирает иконку, надпись остаётся. Info, pause и mute скрываются так же:
 `setInfoVisible` / `setPauseVisible` / `setMuteVisible`.
 
 ## 8. Конфигурация
@@ -317,10 +317,10 @@ Skip отправляет VAST-трекеры `skip` и `onSkip(urls)`. Библ
 | `setSkipOffsetSeconds` | VAST `skipoffset`, иначе `5` | |
 | `setDismissOnCreativeEnd` | `true` | `false` держит креатив до skip или `close` |
 | `setBannerDurationSeconds` | `0` | время на экране для картинки, которую нечем отмерить |
-| `setControlsPosition` | слева × снизу | группа: логотип / info / mute / pause |
+| `setControlsPosition` | слева × снизу | группа: info / mute / pause |
 | `setMarkingPosition` | слева × сверху | чип маркировки |
 | `setSkipPosition` | справа × сверху | чип skip |
-| `setLogoVisible` | `true` | логотип в группе действий |
+| `setLogoVisible` | `true` | логотип в чипе маркировки |
 | `setBackdropVisible` | `false` | `true` рисует под креативом чёрную подложку |
 | `setInfoVisible` | `true` | QR код ClickThrough; без посадочного URL всё равно скрыт |
 | `setPauseVisible` | `true` | пауза linear-креатива; у баннера всё равно скрыта |

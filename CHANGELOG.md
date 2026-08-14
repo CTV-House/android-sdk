@@ -31,6 +31,8 @@ Format: [Keep a Changelog](https://keepachangelog.com/), versions follow SemVer.
 
 ### Changed
 
+- The brand mark moved into the ad-marking chip (left of the label). `setLogoVisible(false)`
+  hides the icon only; the marking text stays. The playback group is info / mute / pause.
 - The overlay is transparent where the creative is not. It used to be filled with black, which hid
   the content behind a still that had transparent pixels or did not match the screen's aspect
   ratio; `setBackdropVisible(true)` brings the fill back.

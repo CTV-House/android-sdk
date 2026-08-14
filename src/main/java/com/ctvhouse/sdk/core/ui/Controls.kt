@@ -5,6 +5,7 @@ import android.app.Dialog
 import android.graphics.Bitmap
 import android.graphics.Color
 import android.graphics.Typeface
+import android.graphics.drawable.Drawable
 import android.graphics.drawable.GradientDrawable
 import android.util.TypedValue
 import android.view.Gravity
@@ -19,7 +20,8 @@ import com.ctvhouse.sdk.R
 
 /**
  * Overlay chrome: media surface plus three independently placed pieces —
- * marking, skip, and the playback group (logo / info / mute / pause).
+ * marking (optional brand icon + label), skip, and the playback group
+ * (info / mute / pause).
  */
 internal class Controls(
     container: ViewGroup,
@@ -37,7 +39,6 @@ internal class Controls(
     private val videoView: SurfaceView
     private val companionView: ImageView
     private val markingChip: TextView
-    private val logoView: ImageView
     private val infoButton: ImageView
     private val muteButton: ImageView
     private val pauseButton: ImageView
@@ -72,17 +73,11 @@ internal class Controls(
             setTextSize(TypedValue.COMPLEX_UNIT_SP, 12f)
             setPadding(markPadH, markPadV, markPadH, markPadV)
             setBackgroundColor(SCRIM)
+            gravity = Gravity.CENTER_VERTICAL
+            includeFontPadding = false
             isFocusable = false
             maxLines = 1
             visibility = View.GONE
-        }
-        logoView = ImageView(context).apply {
-            tag = TAG_LOGO
-            scaleType = ImageView.ScaleType.FIT_CENTER
-            adjustViewBounds = true
-            setImageResource(R.drawable.ctv_sdk_logo)
-            importantForAccessibility = View.IMPORTANT_FOR_ACCESSIBILITY_NO
-            isFocusable = false
         }
         muteButton = roundButton(context, TAG_MUTE) {
             this.actions?.onMuteToggle?.invoke()
@@ -117,7 +112,6 @@ internal class Controls(
             orientation = LinearLayout.HORIZONTAL
             gravity = Gravity.CENTER_VERTICAL
             visibility = View.GONE
-            addView(logoView)
             addView(infoButton)
             addView(muteButton)
             addView(pauseButton)
@@ -284,7 +278,6 @@ internal class Controls(
         val size = dp(actionGroup.context, BUTTON)
         fun box(): LinearLayout.LayoutParams =
             LinearLayout.LayoutParams(size, size).apply { marginEnd = gap }
-        logoView.layoutParams = box()
         infoButton.layoutParams = box()
         muteButton.layoutParams = box()
         pauseButton.layoutParams = box()
@@ -297,11 +290,14 @@ internal class Controls(
     }
 
     private fun applyLogoVisibility() {
-        logoView.visibility = if (logoVisible) View.VISIBLE else View.GONE
-        val showGroup = logoVisible ||
+        val icon = if (logoVisible) markingLogo(markingChip.context) else null
+        markingChip.setCompoundDrawablesRelative(icon, null, null, null)
+        markingChip.compoundDrawablePadding =
+            if (icon != null) dp(markingChip.context, MARK_ICON_GAP) else 0
+        val showGroup =
             infoButton.visibility == View.VISIBLE ||
-            muteButton.visibility == View.VISIBLE ||
-            pauseButton.visibility == View.VISIBLE
+                muteButton.visibility == View.VISIBLE ||
+                pauseButton.visibility == View.VISIBLE
         actionGroup.visibility =
             if (chromeArmed && root.visibility == View.VISIBLE && showGroup) {
                 View.VISIBLE
@@ -322,7 +318,7 @@ internal class Controls(
 
     private fun applyActionMargins() {
         val gap = dp(actionGroup.context, GAP)
-        val visible = listOf(logoView, infoButton, muteButton, pauseButton)
+        val visible = listOf(infoButton, muteButton, pauseButton)
             .filter { it.visibility == View.VISIBLE }
         visible.forEachIndexed { index, view ->
             val lp = view.layoutParams as LinearLayout.LayoutParams
@@ -465,12 +461,19 @@ internal class Controls(
             context.resources.displayMetrics,
         ).toInt()
 
+    /** Brand mark sized for the marking chip's type size. */
+    private fun markingLogo(context: Context): Drawable? {
+        val raw = context.getDrawable(R.drawable.ctv_sdk_logo)?.mutate() ?: return null
+        val size = dp(context, MARK_ICON)
+        raw.setBounds(0, 0, size, size)
+        return raw
+    }
+
     internal companion object {
         const val TAG_MUTE = "ctv.mute"
         const val TAG_PAUSE = "ctv.pause"
         const val TAG_INFO = "ctv.info"
         const val TAG_SKIP = "ctv.skip"
-        const val TAG_LOGO = "ctv.logo"
         const val TAG_MARKING = "ctv.marking"
         const val TAG_ACTIONS = "ctv.actions"
         const val SCRIM = 0xB3000000.toInt()
@@ -478,6 +481,8 @@ internal class Controls(
         const val DISABLED_ALPHA = 0.55f
         const val BUTTON = 36
         const val GAP = 8
+        const val MARK_ICON = 14
+        const val MARK_ICON_GAP = 6
         const val CHROME_PAD = 16
     }
 }

@@ -4,6 +4,7 @@ import android.app.Activity
 import android.graphics.Bitmap
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
+import android.util.TypedValue
 import android.view.Gravity
 import android.view.SurfaceView
 import android.view.View
@@ -204,21 +205,28 @@ class ControlsTest {
     }
 
     @Test
-    fun logoMatchesControlSize_andIsVisibleByDefault() {
+    fun logoSitsInTheMarkingChip_andHidesWithoutDroppingTheLabel() {
         controls.attachToContainer()
         presentVideo(videoChrome(skipEnabled = true))
 
-        assertEquals(View.VISIBLE, logo().visibility)
-        assertNotNull(logo().drawable)
-        assertEquals(muteButton().layoutParams.width, logo().layoutParams.width)
-        assertEquals(muteButton().layoutParams.height, logo().layoutParams.height)
-        assertFalse("logo is decoration, not a D-pad stop", logo().isFocusable)
+        val icon = marking().compoundDrawablesRelative[0]
+        assertNotNull(icon)
+        val size = TypedValue.applyDimension(
+            TypedValue.COMPLEX_UNIT_DIP,
+            Controls.MARK_ICON.toFloat(),
+            marking().resources.displayMetrics,
+        ).toInt()
+        assertEquals(size, icon.bounds.width())
+        assertEquals(size, icon.bounds.height())
+        assertEquals("РЕКЛАМА", marking().text.toString())
 
         controls.setLogoVisible(false)
-        assertEquals(View.GONE, logo().visibility)
+        assertNull(marking().compoundDrawablesRelative[0])
+        assertEquals(View.VISIBLE, marking().visibility)
+        assertEquals("РЕКЛАМА", marking().text.toString())
 
         controls.setLogoVisible(true)
-        assertEquals(View.VISIBLE, logo().visibility)
+        assertNotNull(marking().compoundDrawablesRelative[0])
     }
 
     @Test
@@ -358,8 +366,6 @@ class ControlsTest {
     private fun pauseButton() = root().findViewWithTag<ImageView>(Controls.TAG_PAUSE)
 
     private fun infoButton() = root().findViewWithTag<ImageView>(Controls.TAG_INFO)
-
-    private fun logo() = root().findViewWithTag<ImageView>(Controls.TAG_LOGO)
 
     private fun imageView() = root().getChildAt(1) as ImageView
 
