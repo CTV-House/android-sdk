@@ -2,6 +2,7 @@
 
 English version: [INTEGRATION.md](INTEGRATION.md).
 Вопросы о влиянии на приложение: [FAQ.ru.md](FAQ.ru.md).
+Что должно быть в ответе рекламного сервера: [VAST.ru.md](VAST.ru.md).
 
 Библиотека показывает VAST-креатив поверх контентного плеера, когда хост сообщает о
 возможности: пауза контента (`PauseRollAd`, §3) или действие зрителя в приложении
@@ -194,8 +195,8 @@ new PauseRollAd(rootView).setSoundEnabled(false);
 
 `Linear` с progressive `MediaFile` играет отдельный `ExoPlayer` на поверхности поверх контента.
 Порядок выбора в `MediaFiles`: progressive video (`mp4` → `webm` → остальные), затем
-progressive audio. HLS, DASH и VPAID пропускаются, если есть progressive-вариант. Контейнер
-определяется по MIME-типу, а при его отсутствии — по пути URL.
+progressive audio. HLS, DASH и VPAID не играются вообще, даже если в ответе больше ничего нет.
+Контейнер определяется по MIME-типу, а при его отсутствии — по пути URL.
 
 Что видит хост:
 

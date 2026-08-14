@@ -10,6 +10,7 @@ TriggerRoll для приложений с контентным плеером M
 
 - Руководство по интеграции: **[docs/INTEGRATION.ru.md](docs/INTEGRATION.ru.md)**
 - Влияние на приложение: **[docs/FAQ.ru.md](docs/FAQ.ru.md)**
+- Требования к VAST-ответу: **[docs/VAST.ru.md](docs/VAST.ru.md)**
 - История версий: [CHANGELOG.ru.md](CHANGELOG.ru.md)
 - Дистрибуция: [JitPack](https://jitpack.io/#CTV-House/android-sdk)
 - Лицензия: [LICENSE](LICENSE) — некоммерческое использование; коммерческое право

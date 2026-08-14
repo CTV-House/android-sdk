@@ -2,6 +2,7 @@
 
 Русская версия: [INTEGRATION.ru.md](INTEGRATION.ru.md).
 Questions about the impact on your app: [FAQ.md](FAQ.md).
+What the ad server response must carry: [VAST.md](VAST.md).
 
 The library shows a VAST creative over your content player when the host reports an
 opportunity — a pause in playback (`PauseRollAd`, §3) or an action the viewer took in the app
@@ -201,9 +202,9 @@ viewer did not do anything. Call it before the creative starts.
 
 A `Linear` creative with a progressive `MediaFile` is played by a dedicated `ExoPlayer` on a
 surface above your content. Selection order inside `MediaFiles`: progressive video
-(`mp4` → `webm` → other), then progressive audio. HLS, DASH, and VPAID are skipped whenever a
-progressive variant exists. The container is taken from the MIME type, and from the URL path
-when the MIME type is missing.
+(`mp4` → `webm` → other), then progressive audio. HLS, DASH, and VPAID are never played, even
+when the response carries nothing else. The container is taken from the MIME type, and from the
+URL path when the MIME type is missing.
 
 What the host sees:
 

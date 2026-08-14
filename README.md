@@ -10,6 +10,7 @@ viewer took in the app. Runs on phones and on Android TV.
 
 - Integration guide: **[docs/INTEGRATION.md](docs/INTEGRATION.md)**
 - What it does to your app: **[docs/FAQ.md](docs/FAQ.md)**
+- What a VAST response must carry: **[docs/VAST.md](docs/VAST.md)**
 - Release history: [CHANGELOG.md](CHANGELOG.md)
 - Distribution: [JitPack](https://jitpack.io/#CTV-House/android-sdk)
 - Licence: [LICENSE](LICENSE) — non-commercial use; commercial rights belong to the copyright
