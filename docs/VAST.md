@@ -4,9 +4,9 @@
 How this looks from the app side: [INTEGRATION.md](INTEGRATION.md).
 
 For whoever sets up the campaign and the ad server: what the response to a tag URL must carry for
-`PauseRollAd` and `SwitchRollAd` to show a creative. Both launchers are the same `TriggerRoll`
-format over the same VAST parser, so the requirements are shared; how the two placements differ,
-and what each is better filled with, is §2.
+`PauseRollAd`, `SwitchRollAd` and `StartRollAd` to show a creative. All three launchers are the
+same `TriggerRoll` format over the same VAST parser, so the requirements are shared; how the
+placements differ, and what each is better filled with, is §2.
 
 ## 1. Response
 
@@ -32,7 +32,7 @@ The names and their aliases are in [INTEGRATION.md §9](INTEGRATION.md); both sp
 accepted, `${IFA}` and `[IFA]`. A name we do not own is left as it was, `[ERRORCODE]` included —
 the library does not fill it.
 
-## 2. Two placements
+## 2. Three placements
 
 The opportunity is opened by the app, not by the library: it never listens to the content player
 and never picks the moment itself. Every opportunity is a fresh request for the tag URL — no cache,
@@ -56,26 +56,33 @@ the overlay: the viewer is waiting for the transition, and the app opens what wa
 show. A `show` while an earlier overlay is still up is ignored — a viewer clicking through a rail
 gets one ad, not a queue of them.
 
+`StartRollAd` — the app opening. The switch cycle again, with one opportunity per launch: the app
+asks once, when its first screen is ready, and does not ask a second time in that launch. Behind
+the overlay sits the app's own splash, and there is nothing to resume after the show.
+
 What to answer with:
 
 | Placement | Both formats | Usually filled with |
 |---|---|---|
 | PauseRoll | yes | a fullscreen companion still (§5): playback is paused behind the overlay, and a still waits for the viewer instead of arguing with the reason they paused |
 | SwitchRoll | yes | `Linear` video with sound and a `skipoffset` (§4): the viewer is waiting for the transition, and that wait is the slot — 10–15 seconds read as a bumper before content |
+| StartRoll | yes | `Linear` video, 10–15 seconds (§4): the viewer has just come into the app and is waiting for the first screen |
 
-Neither launcher is tied to a format: `PauseRollAd` plays video on a pause exactly as
-`SwitchRollAd` shows a still. The response decides (§3), under one rule for both — **when the
+No launcher is tied to a format: `PauseRollAd` plays video on a pause exactly as `SwitchRollAd` and
+`StartRollAd` show a still. The response decides (§3), under one rule for all three — **when the
 response carries a companion and a Linear, the companion wins**. So to play video on a pause, do
-not send a companion; to leave a still up after a channel switch, sending the still is enough.
+not send a companion; to leave a still up after a channel switch or on a launch, sending the still
+is enough.
 
 Video on a pause is worth keeping short: while it plays the viewer cannot get back to the content,
 and when it ends the creative dismisses itself and the app resumes playback — a long spot on a
 pause lifts the pause for the viewer.
 
-A still on a switch works too, but nothing inside it can end the show: the viewer is waiting for the
-transition and a companion has no duration of its own. Send `Duration` in the `Linear` of the same
-response (or a soundtrack, §5) and the still goes by itself, after which the app opens what was
-picked. Without one the show holds until a skip, which becomes available after 5 seconds.
+A still on a switch or a launch works too, but nothing inside it can end the show: the viewer is
+waiting for the transition and a companion has no duration of its own. Send `Duration` in the
+`Linear` of the same response (or a soundtrack, §5) and the still goes by itself, after which the
+app opens what was picked or its first screen. Without one the show holds until a skip, which
+becomes available after 5 seconds.
 
 The placements are still worth separate tag URLs: the pause one then does not get preroll video
 from a shared campaign, and reporting does not mix a skipped video with a still that was watched.

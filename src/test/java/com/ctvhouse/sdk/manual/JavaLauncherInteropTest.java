@@ -60,6 +60,22 @@ public class JavaLauncherInteropTest {
     }
 
     @Test
+    public void theStartRollChainResolvesFromJava() {
+        StartRollAd ad = TestLaunchers.startRollAd()
+                .setTagUrl("https://tag.example/vast")
+                .setListener(new HostListener())
+                .setSkipOffsetSeconds(5)
+                .setBackdropVisible(true)
+                .setBannerDurationSeconds(10)
+                .setSkipTemplate("Skip");
+
+        ad.attach();
+        ad.show("cold");
+        ad.dismiss();
+        ad.detach();
+    }
+
+    @Test
     public void thePauseRollChainResolvesFromJava() {
         PauseRollAd ad = TestLaunchers.pauseRollAd()
                 .setTagUrl("https://tag.example/vast")

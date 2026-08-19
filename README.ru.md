@@ -5,8 +5,8 @@ English version: [README.md](README.md).
 TriggerRoll для приложений с контентным плеером Media3: хост сообщает о возможности, и поверх
 видео показывается VAST-креатив. Поддерживаются два формата — **video** (linear
 `MediaFile`, включая audio-only) и **banner** (companion-изображение). Показ из tag URL
-запускают два лончера: `PauseRollAd` — на паузу контента, `SwitchRollAd` — на действие зрителя
-в приложении. Работает на телефонах и на Android TV.
+запускают три лончера: `PauseRollAd` — на паузу контента, `SwitchRollAd` — на действие зрителя
+в приложении, `StartRollAd` — на запуск приложения. Работает на телефонах и на Android TV.
 
 - Руководство по интеграции: **[docs/INTEGRATION.ru.md](docs/INTEGRATION.ru.md)**
 - Влияние на приложение: **[docs/FAQ.ru.md](docs/FAQ.ru.md)**
@@ -66,7 +66,7 @@ pauseRoll.trigger("pause")
 экземпляре.
 
 Публичный API: `com.ctvhouse.sdk.format` (`TriggerRoll`), `com.ctvhouse.sdk.manual`
-(`PauseRollAd` и `SwitchRollAd` — оба по tag URL), `com.ctvhouse.sdk.SdkVersion`.
+(`PauseRollAd`, `SwitchRollAd`, `StartRollAd` — все по tag URL), `com.ctvhouse.sdk.SdkVersion`.
 Остальное — внутреннее.
 
 Полный пример Activity, оба формата креатива, события и ограничения — в

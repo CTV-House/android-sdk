@@ -3,6 +3,15 @@
 Русская версия: [CHANGELOG.ru.md](CHANGELOG.ru.md).
 Format: [Keep a Changelog](https://keepachangelog.com/), versions follow SemVer.
 
+## Unreleased
+
+### Added
+
+- `StartRollAd`: the show `SwitchRollAd` does, opened by the app being launched. `show(reason)` /
+  `dismiss()`, and one opportunity per instance — an `onStart` after a return from the background,
+  or a screen the system rebuilt, does not pay the viewer a second ad. A `show` before `attach()`
+  does not spend that turn. Configuration setters are the ones the other launchers have.
+
 ## 1.2.0 — 2026-08-13
 
 ### Added

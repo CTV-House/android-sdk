@@ -5,9 +5,9 @@ Questions about the impact on your app: [FAQ.md](FAQ.md).
 What the ad server response must carry: [VAST.md](VAST.md).
 
 The library shows a VAST creative over your content player when the host reports an
-opportunity — a pause in playback (`PauseRollAd`, §3) or an action the viewer took in the app
-(`SwitchRollAd`, §10). Two creative formats are supported, both served through the same entry
-point:
+opportunity — a pause in playback (`PauseRollAd`, §3), an action the viewer took in the app
+(`SwitchRollAd`) or the app opening (`StartRollAd`), both in §10. Two creative formats are
+supported, both served through the same entry point:
 
 | Format | Creative | Behaviour |
 |---|---|---|
@@ -311,7 +311,7 @@ hidden with `setInfoVisible` / `setPauseVisible` / `setMuteVisible`.
 
 ## 8. Configuration
 
-Everything is a chainable setter that may be called before `attach()`, and both launchers expose
+Everything is a chainable setter that may be called before `attach()`, and every launcher exposes
 the same set. Sound may also be passed to the constructor.
 
 | Method | Default | Notes |
@@ -385,7 +385,9 @@ Values are URL-encoded. A known macro without a value collapses to nothing, so n
 is ever sent. A name the library does not own is left exactly as it was, which is what keeps an
 ad server's own `${PUID30}`-style parameters intact.
 
-## 10. Ad on an in-app action
+## 10. Ads outside a content pause
+
+### Ad on an in-app action
 
 `SwitchRollAd` is the same format opened by something the viewer did — picking a card, switching
 a channel, opening a section — rather than by a pause. Configuration is identical to
@@ -414,6 +416,43 @@ played out, or `dismiss()` — the next action is a new opportunity.
 
 The overlay does not take focus away permanently: nothing plays behind it, so `onOpen` usually
 only has to stop the layout underneath from taking remote input, and `onClose` gives focus back.
+
+### Ad on app open
+
+`StartRollAd` is the show `SwitchRollAd` does, with one opportunity: a launch happens once.
+
+```kotlin
+startRoll = StartRollAd(binding.root)
+    .setTagUrl(VAST_TAG_URL)
+    .setBackdropVisible(true)
+    .setListener(adListener)
+    .attach()
+
+// once the first screen is ready
+startRoll?.show("cold")
+```
+
+| Call | Meaning |
+|---|---|
+| `show(reason)` | the app is open; `reason` names the launch in the logs — `cold`, `deeplink` |
+| `dismiss()` | host takes the overlay down and goes on to its first screen |
+| `attach()` / `detach()` | same as `PauseRollAd` |
+
+Only the first `show` does anything: the launch ad has one turn per instance. An `onStart` after a
+return from the background, or a screen the system rebuilt, therefore does not pay the viewer a
+second ad. How that single opportunity ended — a show, no fill or an error — does not bring it
+back. A new launch means a new instance.
+
+A `show` before `attach()` does not spend the turn: it is a call-order mistake, it is logged, and
+the next `show` after `attach()` works as the first one.
+
+Call `show` once the container is laid out — the overlay covers whatever is on screen at that
+moment. Behind it there is usually the app's own splash, which is why `setBackdropVisible(true)`
+matters here more than in the other placements: without it the host's logo shows through the
+transparent pixels of the creative.
+
+There is nothing to resume afterwards: in the slot `onClose()` the host simply carries on with its
+launch — opening the first screen, or handing focus to it.
 
 ## 11. Events
 

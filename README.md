@@ -4,9 +4,9 @@
 
 TriggerRoll for apps built on a Media3 content player: the host reports an opportunity, and a
 VAST creative is shown over the video. Two formats are supported — **video** (linear
-`MediaFile`, audio-only included) and **banner** (companion still image). Two launchers turn a
+`MediaFile`, audio-only included) and **banner** (companion still image). Three launchers turn a
 tag URL into a show: `PauseRollAd` for a pause in playback, `SwitchRollAd` for an action the
-viewer took in the app. Runs on phones and on Android TV.
+viewer took in the app, `StartRollAd` for the app opening. Runs on phones and on Android TV.
 
 - Integration guide: **[docs/INTEGRATION.md](docs/INTEGRATION.md)**
 - What it does to your app: **[docs/FAQ.md](docs/FAQ.md)**
@@ -65,8 +65,8 @@ and releases the host views. The instance is terminal afterwards — create a ne
 next screen. `trigger` / `close` on the same instance cover every pause while the screen lives.
 
 Public API: `com.ctvhouse.sdk.format` (`TriggerRoll`), `com.ctvhouse.sdk.manual` (`PauseRollAd`,
-`SwitchRollAd` — both from a tag URL), `com.ctvhouse.sdk.SdkVersion`. Everything else is
-internal.
+`SwitchRollAd`, `StartRollAd` — all from a tag URL), `com.ctvhouse.sdk.SdkVersion`. Everything
+else is internal.
 
 A full Activity example, the two creative formats, events, and limits are in the
 [integration guide](docs/INTEGRATION.md).

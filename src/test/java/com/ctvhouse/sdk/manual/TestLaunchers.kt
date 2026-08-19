@@ -31,6 +31,19 @@ internal object TestLaunchers {
     )
 
     @JvmStatic
+    fun startRollAd(): StartRollAd = StartRollAd(
+        appContext = mock<Context>(),
+        ui = ui(),
+        client = mock<Client>(),
+        bitmapLoader = mock<BitmapLoader>(),
+        videoPlayer = FakeVideoPlayer(),
+        clock = Clock { 0L },
+        mainPoster = QueueMainPoster(),
+        io = Executor { it.run() },
+        track = Executor { it.run() },
+    )
+
+    @JvmStatic
     fun pauseRollAd(): PauseRollAd = PauseRollAd(
         appContext = mock<Context>(),
         ui = ui(),
