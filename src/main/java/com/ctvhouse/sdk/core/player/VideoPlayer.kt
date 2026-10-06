@@ -1,7 +1,7 @@
 package com.ctvhouse.sdk.core.player
 
 import android.content.Context
-import android.view.SurfaceView
+import android.view.TextureView
 import androidx.media3.common.AudioAttributes
 import androidx.media3.common.C
 import androidx.media3.common.MediaItem
@@ -11,13 +11,13 @@ import androidx.media3.exoplayer.ExoPlayer
 
 /**
  * Linear creative player (video **or** audio). Host content player stays separate.
- * [surfaceView] may be null for audio-only creatives.
+ * [textureView] may be null for audio-only creatives.
  */
 internal interface VideoPlayer {
     fun play(
         context: Context,
         url: String,
-        surfaceView: SurfaceView?,
+        textureView: TextureView?,
         onEnded: () -> Unit,
         onError: (String) -> Unit,
         onMutedChanged: ((Boolean) -> Unit)? = null,
@@ -47,7 +47,7 @@ internal object UnavailablePlayer : VideoPlayer {
     override fun play(
         context: Context,
         url: String,
-        surfaceView: SurfaceView?,
+        textureView: TextureView?,
         onEnded: () -> Unit,
         onError: (String) -> Unit,
         onMutedChanged: ((Boolean) -> Unit)?,
@@ -83,7 +83,7 @@ internal class ExoVideoPlayer(
     override fun play(
         context: Context,
         url: String,
-        surfaceView: SurfaceView?,
+        textureView: TextureView?,
         onEnded: () -> Unit,
         onError: (String) -> Unit,
         onMutedChanged: ((Boolean) -> Unit)?,
@@ -96,7 +96,7 @@ internal class ExoVideoPlayer(
         this.onMutedChanged = onMutedChanged
         this.onPlayingChanged = onPlayingChanged
         var readySent = false
-        val hasSurface = surfaceView != null
+        val hasSurface = textureView != null
         fun notifyReady() {
             if (readySent) return
             readySent = true
@@ -110,12 +110,21 @@ internal class ExoVideoPlayer(
             if (!soundEnabled) volume = 0f
         }
         player = exo
-        if (surfaceView != null) {
-            exo.setVideoSurfaceView(surfaceView)
+        if (textureView != null) {
+            exo.setVideoTextureView(textureView)
         }
         exo.setMediaItem(MediaItem.fromUri(url))
-        exo.addListener(object : Player.Listener {
+        exo.addListener(object : PlayerCallbacks() {
+            @Deprecated("Deprecated in Media3")
+            override fun onPlayerStateChanged(playWhenReady: Boolean, playbackState: Int) {
+                onState(playbackState)
+            }
+
             override fun onPlaybackStateChanged(playbackState: Int) {
+                onState(playbackState)
+            }
+
+            fun onState(playbackState: Int) {
                 if (playbackState == Player.STATE_ENDED) onEnded()
                 // Audio-only has no frame. Video waits for the first composed frame so
                 // chrome does not sit on an empty surface.

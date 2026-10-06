@@ -115,6 +115,12 @@ class PauseRollAd private constructor(
         return this
     }
 
+    /** Label of the chip that opens the ClickThrough. */
+    fun setLandingTemplate(template: String): PauseRollAd {
+        format.setLandingTemplate(template)
+        return this
+    }
+
     fun setSkipOffsetSeconds(seconds: Int): PauseRollAd {
         format.setSkipOffsetSeconds(seconds)
         return this
@@ -199,6 +205,15 @@ class PauseRollAd private constructor(
         return this
     }
 
+    /**
+     * Chip next to skip that opens the ClickThrough in the system browser. On by default;
+     * still hidden without a landing URL.
+     */
+    fun setLandingVisible(visible: Boolean): PauseRollAd {
+        format.setLandingVisible(visible)
+        return this
+    }
+
     /** Pause / resume of the linear creative. On by default; still hidden for a banner. */
     fun setPauseVisible(visible: Boolean): PauseRollAd {
         format.setPauseVisible(visible)
@@ -258,6 +273,9 @@ class PauseRollAd private constructor(
 
     @VisibleForTesting
     internal fun onInfoFromUi() = format.onInfoFromUi()
+
+    @VisibleForTesting
+    internal fun onLandingFromUi() = format.onLandingFromUi()
 
     companion object {
         private const val TAG = "PauseRollAd"

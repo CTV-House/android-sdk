@@ -37,7 +37,9 @@ the creative dismisses itself.
 | Language | Kotlin or Java |
 
 Media3 is declared `compileOnly`, so the host picks the version. The whole app must stay on
-one Media3 line.
+one Media3 line. Some TV ART builds never dispatch Java default methods on
+`Player.Listener` — a Kotlin listener then dies with `AbstractMethodError`. Extend
+`PlayerCallbacks` instead.
 
 ## 2. Install
 
@@ -104,7 +106,7 @@ class PlayerActivity : AppCompatActivity() {
         exo.prepare()
         exo.playWhenReady = true
 
-        exo.addListener(object : Player.Listener {
+        exo.addListener(object : PlayerCallbacks() {
             override fun onIsPlayingChanged(isPlaying: Boolean) {
                 if (!isPlaying) return
                 contentHadPlayback = true
@@ -292,22 +294,24 @@ Three pieces sit independently, each with its own corner (horizontal × vertical
 |---|---|---|
 | playback group | left × bottom | info, mute, pause |
 | marking | left × top | brand mark + ad-marking chip |
-| skip | right × top | skip countdown / skip |
+| skip | right × top | landing chip + skip countdown / skip |
 
 Mute and pause appear for a linear creative, and while a soundtrack plays under a banner.
-Info appears when the creative has an http(s) `ClickThrough`. A banner keeps marking, skip,
-and info when a landing URL exists. Chrome is shown together with the creative, not
-while the media is still buffering.
+Info and the landing chip appear when the creative has an http(s) `ClickThrough`. A banner keeps
+marking, skip, info and landing when a landing URL exists. Chrome is shown together with the
+creative, not while the media is still buffering.
 Tapping mute or pause fires the VAST `mute` / `unmute` / `pause` / `resume` trackers the same
-way a player event would. Tapping info opens a QR of the ClickThrough and pings `ClickTracking`.
+way a player event would. Tapping info opens a QR of the ClickThrough and pings `ClickTracking`;
+the landing chip (`Перейти`, left of skip) opens the same URL in the device browser (not the
+host), pings `ClickTracking`, then ends the show — VAST `close` and slot `onClose()`.
 
 The chrome is built for a D-pad: the overlay itself does not take focus, skip stays in the
 chain during the countdown, and a focused control turns white. From pause, the remote can
-reach skip even when it sits in another corner.
+reach the landing chip and skip even when they sit in another corner.
 
 The brand mark sits in the ad-marking chip, to the left of the label. It is on by default;
-`setLogoVisible(false)` hides the icon and leaves the marking text. Info, pause and mute can be
-hidden with `setInfoVisible` / `setPauseVisible` / `setMuteVisible`.
+`setLogoVisible(false)` hides the icon and leaves the marking text. Info, landing, pause and mute
+can be hidden with `setInfoVisible` / `setLandingVisible` / `setPauseVisible` / `setMuteVisible`.
 
 ## 8. Configuration
 
@@ -328,25 +332,27 @@ the same set. Sound may also be passed to the constructor.
 | `setBannerDurationSeconds` | `0` | time on screen for a still the response does not time |
 | `setControlsPosition` | left × bottom | playback group: info / mute / pause |
 | `setMarkingPosition` | left × top | ad-marking chip |
-| `setSkipPosition` | right × top | skip chip |
+| `setSkipPosition` | right × top | landing chip + skip chip |
 | `setLogoVisible` | `true` | brand mark in the marking chip |
 | `setBackdropVisible` | `false` | `true` paints a black fill under the creative |
 | `setInfoVisible` | `true` | QR of the ClickThrough; still hidden without a landing URL |
+| `setLandingVisible` | `true` | chip that opens the ClickThrough in the browser; still hidden without a landing URL |
 | `setPauseVisible` | `true` | pause of the linear creative; still hidden for a banner |
 | `setMuteVisible` | `true` | mute of the linear creative; still hidden for a banner or when sound is off |
 | `setMarkingTemplate` | `РЕКЛАМА ${ERID}` | Russian ad-marking default |
 | `setSkipCountdownTemplate` | `Пропустить через ${SECONDS}` | |
 | `setSkipTemplate` | `Пропустить` | |
+| `setLandingTemplate` | `Перейти` | label of the landing chip |
 | `setDebugLogging` | `false` | process-wide; test builds only |
 | `setListener` | `null` | slot window and VAST tracking |
 
-The three text defaults follow Russian ad-marking rules. Override them for other markets.
-Placeholders: `${ERID}`, `${SECONDS}`.
+The text defaults are Russian, and the marking one follows Russian ad-marking rules. Override
+them for other markets. Placeholders: `${ERID}`, `${SECONDS}`.
 
 ## 9. Device and macros
 
 The library builds one device snapshot per screen and fills macros from it — in the tag URL, in
-every tracking pixel it fires, in the creative URL, and in the `ClickThrough` behind the QR. A
+every tracking pixel it fires, in the creative URL, and in the `ClickThrough`. A
 pixel that arrives with `[IFA]` in it therefore reports the same device as the request that
 earned it.
 
@@ -485,6 +491,7 @@ Failure mapping:
 | content resumed while the tag is loading | host `close()` — response dropped silently |
 | content resumed while the ad is on screen | host `close()` — VAST `close`, then slot `onClose` |
 | viewer skips | VAST `skip` / `onSkip`, then slot `onClose` |
+| viewer taps landing | `ClickTracking`, device browser, VAST `close`, then slot `onClose` |
 
 Each quartile and each `progress@offset` is sent once per show.
 
@@ -511,7 +518,7 @@ All configuration setters are main-thread. All listener callbacks arrive on the 
 ## 13. Android TV and remotes
 
 When chrome appears, skip takes focus. After that the library does not move it: the remote
-navigates info, mute, pause and skip. Hide the content player's chrome in `onOpen()` so the
+navigates info, mute, pause, landing and skip. Hide the content player's chrome in `onOpen()` so the
 remote cannot operate it under the overlay. After the overlay closes the library does not hand
 focus back — restore the controller and focus in `onClose()`, as in the example above.
 
@@ -519,8 +526,9 @@ focus back — restore the controller and focus in `onClose()`, as in the exampl
 
 ## 14. What the format does not do
 
-- No in-app browser. `ClickThrough` is shown as a QR from the info control; `ClickTracking` is
-  pinged when that control is used. `CustomClick` is parsed but not acted upon.
+- No in-app browser. `ClickThrough` from the landing chip goes to the device browser and closes
+  the show; info shows it as a QR without closing. `ClickTracking` is pinged either way.
+  `CustomClick` is parsed but not acted upon.
 - No interactive creatives: VPAID, SIMID, HTML and iframe resources are skipped.
 - No ad pods: one opportunity shows one creative.
 

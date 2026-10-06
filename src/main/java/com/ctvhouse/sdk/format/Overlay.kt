@@ -1,9 +1,12 @@
 package com.ctvhouse.sdk.format
 
+import android.content.ActivityNotFoundException
 import android.content.Context
+import android.content.Intent
 import android.graphics.Bitmap
+import android.net.Uri
 import android.os.Looper
-import android.view.SurfaceView
+import android.view.TextureView
 import androidx.annotation.MainThread
 import com.ctvhouse.sdk.SdkVersion
 import com.ctvhouse.sdk.core.identity.Identity
@@ -92,6 +95,7 @@ abstract class Overlay<T : Overlay<T, L>, L : Overlay.Listener> internal constru
     private var markingTemplate: String = DEFAULT_MARKING_TEMPLATE
     private var skipCountdownTemplate: String = DEFAULT_SKIP_COUNTDOWN_TEMPLATE
     private var skipTemplate: String = DEFAULT_SKIP_TEMPLATE
+    private var landingTemplate: String = DEFAULT_LANDING_TEMPLATE
 
     /**
      * Host callbacks. Set by the concrete format rather than here: a setter taking the type
@@ -106,6 +110,7 @@ abstract class Overlay<T : Overlay<T, L>, L : Overlay.Listener> internal constru
     protected var overlayActive = false
     protected var playbackChrome = false
     private var infoVisible = true
+    private var landingVisible = true
     private var pauseVisible = true
     private var muteVisible = true
     protected var infoUrl: String? = null
@@ -180,6 +185,12 @@ abstract class Overlay<T : Overlay<T, L>, L : Overlay.Listener> internal constru
 
     fun setSkipTemplate(template: String): T {
         skipTemplate = template
+        return self()
+    }
+
+    /** Label of the chip that opens the ClickThrough. */
+    fun setLandingTemplate(template: String): T {
+        landingTemplate = template
         return self()
     }
 
@@ -301,6 +312,17 @@ abstract class Overlay<T : Overlay<T, L>, L : Overlay.Listener> internal constru
     /** Info control (QR of the ClickThrough). On by default; still hidden without a landing URL. */
     fun setInfoVisible(visible: Boolean): T {
         infoVisible = visible
+        refreshChromeIfShowing()
+        return self()
+    }
+
+    /**
+     * Chip next to skip that hands the ClickThrough to the system browser. On by default;
+     * still hidden without a landing URL. Devices without a browser drop the intent, so the
+     * chip is worth hiding on a fleet where the info QR is the only way out.
+     */
+    fun setLandingVisible(visible: Boolean): T {
+        landingVisible = visible
         refreshChromeIfShowing()
         return self()
     }
@@ -491,7 +513,7 @@ abstract class Overlay<T : Overlay<T, L>, L : Overlay.Listener> internal constru
      */
     private fun playCreative(
         mediaUrl: String,
-        surface: SurfaceView?,
+        surface: TextureView?,
         onEnded: () -> Unit,
         onPlaybackError: (String) -> Unit,
         onMutedChanged: ((Boolean) -> Unit)?,
@@ -501,7 +523,7 @@ abstract class Overlay<T : Overlay<T, L>, L : Overlay.Listener> internal constru
         videoPlayer.play(
             context = appContext,
             url = mediaUrl,
-            surfaceView = surface,
+            textureView = surface,
             onEnded = { mainPoster.post { onEnded() } },
             onError = { message -> mainPoster.post { onPlaybackError(message) } },
             onMutedChanged = onMutedChanged?.let { cb -> { muted -> mainPoster.post { cb(muted) } } },
@@ -595,6 +617,8 @@ abstract class Overlay<T : Overlay<T, L>, L : Overlay.Listener> internal constru
             marking = marking,
             skipLabel = skipLabel(skipEnabled),
             skipEnabled = skipEnabled,
+            landingLabel = landingTemplate,
+            landingAvailable = landingVisible && !infoUrl.isNullOrBlank(),
             muted = videoPlayer.isMuted(),
             paused = playbackChrome && !videoPlayer.isPlaying(),
             pauseAvailable = pauseVisible && playbackChrome,
@@ -611,6 +635,62 @@ abstract class Overlay<T : Overlay<T, L>, L : Overlay.Listener> internal constru
     protected fun showInfoQr() {
         val url = infoUrl ?: return
         ui.showQr(url)
+    }
+
+    /**
+     * Hands the landing URL to the device's default browser, not the host. A new task, so the
+     * browser does not land in the host back stack. TVs without a browser just log.
+     */
+    protected fun openLanding(): Boolean {
+        val url = infoUrl ?: return false
+        val uri = Uri.parse(url)
+        val opened = startLanding(browserIntent(uri)) ||
+            externalBrowser(uri)?.let { startLanding(it) } == true
+        if (opened) {
+            Log.i(logTag(), "landing opened $url")
+        } else {
+            Log.w(logTag(), "no app to open $url")
+        }
+        return opened
+    }
+
+    private fun browserIntent(uri: Uri): Intent =
+        Intent(Intent.ACTION_VIEW, uri)
+            .addCategory(Intent.CATEGORY_BROWSABLE)
+            .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+            .apply {
+                selector = Intent(Intent.ACTION_MAIN).addCategory(Intent.CATEGORY_APP_BROWSER)
+            }
+
+    /** A browsable handler that is not this app and not a TV stub. */
+    private fun externalBrowser(uri: Uri): Intent? {
+        val intent = Intent(Intent.ACTION_VIEW, uri)
+            .addCategory(Intent.CATEGORY_BROWSABLE)
+            .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+        val self = appContext.packageName
+        val target = appContext.packageManager.queryIntentActivities(intent, 0)
+            .mapNotNull { it.activityInfo }
+            .firstOrNull { info ->
+                val pkg = info.packageName.orEmpty()
+                pkg.isNotEmpty() &&
+                    pkg != self &&
+                    pkg != "android" &&
+                    !pkg.contains("resolver", ignoreCase = true) &&
+                    !pkg.contains("fallback", ignoreCase = true) &&
+                    !pkg.contains("stub", ignoreCase = true)
+            } ?: return null
+        intent.setClassName(target.packageName, target.name)
+        return intent
+    }
+
+    private fun startLanding(intent: Intent): Boolean = try {
+        appContext.startActivity(intent)
+        true
+    } catch (_: ActivityNotFoundException) {
+        false
+    } catch (t: Throwable) {
+        Log.e(logTag(), "landing could not be opened", t)
+        false
     }
 
     protected fun landingUrl(raw: String?): String? {
@@ -759,6 +839,7 @@ abstract class Overlay<T : Overlay<T, L>, L : Overlay.Listener> internal constru
         internal const val DEFAULT_MARKING_TEMPLATE = "РЕКЛАМА \${ERID}"
         internal const val DEFAULT_SKIP_COUNTDOWN_TEMPLATE = "Пропустить через \${SECONDS}"
         internal const val DEFAULT_SKIP_TEMPLATE = "Пропустить"
+        internal const val DEFAULT_LANDING_TEMPLATE = "Перейти"
         internal const val TICK_INTERVAL_MS = 250L
         private const val POOL_KEEP_ALIVE_SECONDS = 30L
 

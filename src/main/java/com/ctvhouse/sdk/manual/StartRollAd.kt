@@ -127,6 +127,12 @@ class StartRollAd private constructor(
         return this
     }
 
+    /** Label of the chip that opens the ClickThrough. */
+    fun setLandingTemplate(template: String): StartRollAd {
+        format.setLandingTemplate(template)
+        return this
+    }
+
     fun setSkipOffsetSeconds(seconds: Int): StartRollAd {
         format.setSkipOffsetSeconds(seconds)
         return this
@@ -211,6 +217,15 @@ class StartRollAd private constructor(
     /** Info control (QR of the ClickThrough). On by default; still hidden without a landing URL. */
     fun setInfoVisible(visible: Boolean): StartRollAd {
         format.setInfoVisible(visible)
+        return this
+    }
+
+    /**
+     * Chip next to skip that opens the ClickThrough in the system browser. On by default;
+     * still hidden without a landing URL.
+     */
+    fun setLandingVisible(visible: Boolean): StartRollAd {
+        format.setLandingVisible(visible)
         return this
     }
 

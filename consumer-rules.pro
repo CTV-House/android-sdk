@@ -6,4 +6,5 @@
 -keep class com.ctvhouse.sdk.format.TriggerRoll$* { *; }
 -keep class com.ctvhouse.sdk.manual.PauseRollAd { *; }
 -keep class com.ctvhouse.sdk.manual.PauseRollAd$* { *; }
+-keep class com.ctvhouse.sdk.core.player.PlayerCallbacks { *; }
 -dontwarn com.google.zxing.**

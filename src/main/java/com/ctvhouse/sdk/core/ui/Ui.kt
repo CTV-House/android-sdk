@@ -1,7 +1,7 @@
 package com.ctvhouse.sdk.core.ui
 
 import android.graphics.Bitmap
-import android.view.SurfaceView
+import android.view.TextureView
 import android.view.ViewGroup
 
 internal interface Ui {
@@ -10,7 +10,7 @@ internal interface Ui {
 
     /** Terminal cleanup: drop host views and callbacks. The instance is unusable afterwards. */
     fun release() {}
-    fun videoSurface(): SurfaceView?
+    fun videoSurface(): TextureView?
     fun setPlacement(placement: Placement) {}
     fun setMarkingPlacement(placement: Placement) {}
     fun setSkipPlacement(placement: Placement) {}
@@ -51,7 +51,7 @@ internal class ViewUi(
         controls?.detachFromContainer()
     }
 
-    override fun videoSurface(): SurfaceView? = controls?.videoSurface()
+    override fun videoSurface(): TextureView? = controls?.videoSurface()
 
     override fun setPlacement(placement: Placement) {
         controls?.setPlacement(placement)

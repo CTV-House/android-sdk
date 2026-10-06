@@ -9,7 +9,7 @@ import android.graphics.drawable.Drawable
 import android.graphics.drawable.GradientDrawable
 import android.util.TypedValue
 import android.view.Gravity
-import android.view.SurfaceView
+import android.view.TextureView
 import android.view.View
 import android.view.ViewGroup
 import android.widget.FrameLayout
@@ -20,8 +20,8 @@ import com.ctvhouse.sdk.R
 
 /**
  * Overlay chrome: media surface plus three independently placed pieces —
- * marking (optional brand icon + label), skip, and the playback group
- * (info / mute / pause).
+ * marking (optional brand icon + label), the skip corner (landing chip left of skip),
+ * and the playback group (info / mute / pause).
  */
 internal class Controls(
     container: ViewGroup,
@@ -32,17 +32,20 @@ internal class Controls(
         var onMuteToggle: () -> Unit = {},
         var onPauseToggle: () -> Unit = {},
         var onInfo: () -> Unit = {},
+        var onLanding: () -> Unit = {},
     )
 
     private var container: ViewGroup? = container
     private var actions: Actions? = actions
-    private val videoView: SurfaceView
+    private val videoView: TextureView
     private val companionView: ImageView
     private val markingChip: TextView
     private val infoButton: ImageView
     private val muteButton: ImageView
     private val pauseButton: ImageView
     private val skipButton: TextView
+    private val landingButton: TextView
+    private val skipGroup: LinearLayout
     private val actionGroup: LinearLayout
     private val root: FrameLayout
     private var playbackPlacement: Placement = Placement.PLAYBACK
@@ -50,6 +53,7 @@ internal class Controls(
     private var skipPlacement: Placement = Placement.SKIP
     private var logoVisible: Boolean = true
     private var skipArmed: Boolean = false
+    private var landingOffered: Boolean = false
     private var chromeArmed: Boolean = false
     private var lastChrome: Chrome? = null
     private var infoDialog: Dialog? = null
@@ -58,8 +62,7 @@ internal class Controls(
         val context = container.context
         val markPadH = dp(context, 10)
         val markPadV = dp(context, 4)
-        videoView = SurfaceView(context).apply {
-            setZOrderMediaOverlay(true)
+        videoView = TextureView(context).apply {
             visibility = View.GONE
         }
         companionView = ImageView(context).apply {
@@ -88,24 +91,30 @@ internal class Controls(
         infoButton = roundButton(context, TAG_INFO) {
             this.actions?.onInfo?.invoke()
         }.apply { setImageDrawable(Icons.info()) }
-        skipButton = TextView(context).apply {
-            tag = TAG_SKIP
-            id = View.generateViewId()
-            setTextColor(Color.WHITE)
-            setTextSize(TypedValue.COMPLEX_UNIT_SP, 13f)
-            typeface = Typeface.DEFAULT_BOLD
-            gravity = Gravity.CENTER
-            includeFontPadding = false
-            minHeight = dp(context, BUTTON)
-            setPadding(dp(context, 12), 0, dp(context, 12), 0)
-            setBackgroundColor(SCRIM)
-            isFocusable = true
-            isFocusableInTouchMode = true
-            visibility = View.GONE
-            setOnFocusChangeListener { _, hasFocus -> applySkipFocus(hasFocus) }
-            setOnClickListener {
-                if (skipArmed) this@Controls.actions?.onSkip?.invoke()
-            }
+        skipButton = chip(context, TAG_SKIP) {
+            if (skipArmed) this.actions?.onSkip?.invoke()
+        }
+        landingButton = chip(context, TAG_LANDING) {
+            this.actions?.onLanding?.invoke()
+        }
+        skipGroup = LinearLayout(context).apply {
+            tag = TAG_SKIP_GROUP
+            orientation = LinearLayout.HORIZONTAL
+            gravity = Gravity.CENTER_VERTICAL
+            addView(
+                landingButton,
+                LinearLayout.LayoutParams(
+                    LinearLayout.LayoutParams.WRAP_CONTENT,
+                    dp(context, BUTTON),
+                ).apply { marginEnd = dp(context, GAP) },
+            )
+            addView(
+                skipButton,
+                LinearLayout.LayoutParams(
+                    LinearLayout.LayoutParams.WRAP_CONTENT,
+                    dp(context, BUTTON),
+                ),
+            )
         }
         actionGroup = LinearLayout(context).apply {
             tag = TAG_ACTIONS
@@ -132,7 +141,7 @@ internal class Controls(
             addView(markingChip, cornerLp(context, Placement.MARKING))
             addView(actionGroup, cornerLp(context, Placement.PLAYBACK))
             addView(
-                skipButton,
+                skipGroup,
                 cornerLp(context, Placement.SKIP, height = dp(context, BUTTON)),
             )
         }
@@ -187,7 +196,7 @@ internal class Controls(
         (root.parent as? ViewGroup)?.removeView(root)
     }
 
-    fun videoSurface(): SurfaceView = videoView
+    fun videoSurface(): TextureView = videoView
 
     fun showVideo(chrome: Chrome) {
         clearImage()
@@ -208,6 +217,7 @@ internal class Controls(
         chromeArmed = true
         markingChip.visibility = View.VISIBLE
         skipButton.visibility = View.VISIBLE
+        applyLandingVisibility()
         applyLogoVisibility()
         wireFocus()
         focusSkip()
@@ -220,6 +230,9 @@ internal class Controls(
         skipButton.text = chrome.skipLabel
         skipArmed = chrome.skipEnabled
         skipButton.alpha = if (chrome.skipEnabled) 1f else DISABLED_ALPHA
+        landingButton.text = chrome.landingLabel
+        landingOffered = chrome.landingAvailable
+        applyLandingVisibility()
         muteButton.visibility = if (chrome.muteAvailable) View.VISIBLE else View.GONE
         pauseButton.visibility = if (chrome.pauseAvailable) View.VISIBLE else View.GONE
         infoButton.visibility = if (chrome.infoAvailable) View.VISIBLE else View.GONE
@@ -239,6 +252,7 @@ internal class Controls(
         dismissInfo()
         markingChip.visibility = View.GONE
         skipButton.visibility = View.GONE
+        landingButton.visibility = View.GONE
         actionGroup.visibility = View.GONE
         clearImage()
         videoView.visibility = View.GONE
@@ -251,6 +265,8 @@ internal class Controls(
         detachFromContainer()
         skipButton.setOnClickListener(null)
         skipButton.onFocusChangeListener = null
+        landingButton.setOnClickListener(null)
+        landingButton.onFocusChangeListener = null
         muteButton.setOnClickListener(null)
         muteButton.onFocusChangeListener = null
         pauseButton.setOnClickListener(null)
@@ -266,6 +282,7 @@ internal class Controls(
         dismissInfo()
         markingChip.visibility = View.GONE
         skipButton.visibility = View.GONE
+        landingButton.visibility = View.GONE
         actionGroup.visibility = View.GONE
         root.visibility = View.VISIBLE
         root.bringToFront()
@@ -284,9 +301,15 @@ internal class Controls(
         applyActionMargins()
         pin(markingChip, markingPlacement)
         pin(actionGroup, playbackPlacement)
-        pin(skipButton, skipPlacement, height = size)
+        pin(skipGroup, skipPlacement, height = size)
+        applyLandingVisibility()
         applyLogoVisibility()
         wireFocus()
+    }
+
+    private fun applyLandingVisibility() {
+        landingButton.visibility =
+            if (chromeArmed && landingOffered) View.VISIBLE else View.GONE
     }
 
     private fun applyLogoVisibility() {
@@ -330,12 +353,7 @@ internal class Controls(
     private fun wireFocus() {
         val chain = listOf(infoButton, muteButton, pauseButton)
             .filter { it.visibility == View.VISIBLE }
-        skipButton.nextFocusLeftId = View.NO_ID
-        skipButton.nextFocusRightId = View.NO_ID
-        skipButton.nextFocusUpId = View.NO_ID
-        skipButton.nextFocusDownId = View.NO_ID
-        skipButton.nextFocusForwardId = View.NO_ID
-        chain.forEach { button ->
+        (chain + listOf(skipButton, landingButton)).forEach { button ->
             button.nextFocusLeftId = View.NO_ID
             button.nextFocusRightId = View.NO_ID
             button.nextFocusUpId = View.NO_ID
@@ -347,8 +365,20 @@ internal class Controls(
             chain[i].nextFocusForwardId = chain[i + 1].id
             chain[i + 1].nextFocusLeftId = chain[i].id
         }
+        val landing = landingButton.takeIf { it.visibility == View.VISIBLE }
+        if (landing != null) {
+            landing.nextFocusRightId = skipButton.id
+            landing.nextFocusForwardId = skipButton.id
+            skipButton.nextFocusLeftId = landing.id
+        }
         val last = chain.lastOrNull() ?: return
-        linkFocus(last, skipButton, playbackPlacement, skipPlacement)
+        // The playback group enters the skip corner at its near edge: landing sits left of skip.
+        val entry = if (landing != null && skipPlacement.horizontal == Placement.Horizontal.RIGHT) {
+            landing
+        } else {
+            skipButton
+        }
+        linkFocus(last, entry, playbackPlacement, skipPlacement)
     }
 
     /**
@@ -423,15 +453,34 @@ internal class Controls(
         if (!skipButton.isFocused) skipButton.post { skipButton.requestFocus() }
     }
 
-    private fun applySkipFocus(hasFocus: Boolean) {
-        skipButton.setBackgroundColor(if (hasFocus) FOCUS_FILL else SCRIM)
-        skipButton.setTextColor(if (hasFocus) Color.BLACK else Color.WHITE)
+    private fun applyChipFocus(chip: TextView, hasFocus: Boolean) {
+        chip.setBackgroundColor(if (hasFocus) FOCUS_FILL else SCRIM)
+        chip.setTextColor(if (hasFocus) Color.BLACK else Color.WHITE)
     }
 
     private fun applyRoundFocus(button: ImageView, hasFocus: Boolean) {
         (button.background as? GradientDrawable)?.setColor(if (hasFocus) FOCUS_FILL else SCRIM)
         button.setColorFilter(if (hasFocus) Color.BLACK else Color.WHITE)
     }
+
+    private fun chip(context: Context, tag: String, onClick: () -> Unit): TextView =
+        TextView(context).apply {
+            this.tag = tag
+            id = View.generateViewId()
+            setTextColor(Color.WHITE)
+            setTextSize(TypedValue.COMPLEX_UNIT_SP, 13f)
+            typeface = Typeface.DEFAULT_BOLD
+            gravity = Gravity.CENTER
+            includeFontPadding = false
+            minHeight = dp(context, BUTTON)
+            setPadding(dp(context, 12), 0, dp(context, 12), 0)
+            setBackgroundColor(SCRIM)
+            isFocusable = true
+            isFocusableInTouchMode = true
+            visibility = View.GONE
+            setOnFocusChangeListener { _, hasFocus -> applyChipFocus(this, hasFocus) }
+            setOnClickListener { onClick() }
+        }
 
     private fun roundButton(context: Context, tag: String, onClick: () -> Unit): ImageView {
         val size = dp(context, BUTTON)
@@ -474,6 +523,8 @@ internal class Controls(
         const val TAG_PAUSE = "ctv.pause"
         const val TAG_INFO = "ctv.info"
         const val TAG_SKIP = "ctv.skip"
+        const val TAG_SKIP_GROUP = "ctv.skipgroup"
+        const val TAG_LANDING = "ctv.landing"
         const val TAG_MARKING = "ctv.marking"
         const val TAG_ACTIONS = "ctv.actions"
         const val SCRIM = 0xB3000000.toInt()

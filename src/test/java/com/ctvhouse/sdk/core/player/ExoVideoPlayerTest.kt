@@ -1,7 +1,7 @@
 package com.ctvhouse.sdk.core.player
 
 import android.content.Context
-import android.view.SurfaceView
+import android.view.TextureView
 import androidx.media3.common.Player
 import androidx.media3.exoplayer.ExoPlayer
 import org.junit.Assert.assertEquals
@@ -117,6 +117,36 @@ class ExoVideoPlayerTest {
     }
 
     @Test
+    fun listenerBodiesExistForTheCallbacksExoPlayerAlwaysFires() {
+        val listener = playAndCapture(surfaceView = mock(), onReady = {})
+
+        listener.onEvents(exo, mock())
+        listener.onSurfaceSizeChanged(1920, 1080)
+    }
+
+    @Test
+    fun deprecatedStateCallback_isTheSameAsPlaybackStateChanged() {
+        val ready = mutableListOf<Unit>()
+        val ended = mutableListOf<Unit>()
+        play(
+            soundEnabled = true,
+            surfaceView = null,
+            onReady = { ready.add(Unit) },
+            onEnded = { ended.add(Unit) },
+        )
+        val listener = argumentCaptor<Player.Listener>()
+        verify(exo).addListener(listener.capture())
+
+        @Suppress("DEPRECATION")
+        listener.firstValue.onPlayerStateChanged(true, Player.STATE_READY)
+        @Suppress("DEPRECATION")
+        listener.firstValue.onPlayerStateChanged(true, Player.STATE_ENDED)
+
+        assertEquals(1, ready.size)
+        assertEquals(1, ended.size)
+    }
+
+    @Test
     fun aSilentSlotIgnoresAnUnmuteFromTheChrome() {
         val player = play(soundEnabled = false)
 
@@ -149,15 +179,16 @@ class ExoVideoPlayerTest {
     private fun play(
         soundEnabled: Boolean,
         onMutedChanged: ((Boolean) -> Unit)? = null,
-        surfaceView: SurfaceView? = null,
+        surfaceView: TextureView? = null,
         onReady: (() -> Unit)? = null,
+        onEnded: () -> Unit = {},
     ): ExoVideoPlayer {
         val player = ExoVideoPlayer(soundEnabled = soundEnabled, playerFactory = { exo })
         player.play(
             context = context,
             url = "https://example.com/ad.mp4",
-            surfaceView = surfaceView,
-            onEnded = {},
+            textureView = surfaceView,
+            onEnded = onEnded,
             onError = {},
             onMutedChanged = onMutedChanged,
             onReady = onReady,
@@ -166,7 +197,7 @@ class ExoVideoPlayerTest {
     }
 
     private fun playAndCapture(
-        surfaceView: SurfaceView?,
+        surfaceView: TextureView?,
         onReady: () -> Unit,
     ): Player.Listener {
         play(soundEnabled = true, surfaceView = surfaceView, onReady = onReady)

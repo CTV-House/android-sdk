@@ -6,7 +6,7 @@ import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.util.TypedValue
 import android.view.Gravity
-import android.view.SurfaceView
+import android.view.TextureView
 import android.view.View
 import android.widget.FrameLayout
 import android.widget.ImageView
@@ -34,6 +34,7 @@ class ControlsTest {
     private var mutes = 0
     private var pauses = 0
     private var infos = 0
+    private var landings = 0
 
     @Before
     fun setUp() {
@@ -44,6 +45,7 @@ class ControlsTest {
         mutes = 0
         pauses = 0
         infos = 0
+        landings = 0
         controls = Controls(
             container,
             Controls.Actions(
@@ -51,6 +53,7 @@ class ControlsTest {
                 onMuteToggle = { mutes++ },
                 onPauseToggle = { pauses++ },
                 onInfo = { infos++ },
+                onLanding = { landings++ },
             ),
         )
     }
@@ -71,12 +74,8 @@ class ControlsTest {
     }
 
     @Test
-    fun adSurfaceStaysAboveHostContent() {
-        val subLayer = SurfaceView::class.java
-            .getDeclaredField("mSubLayer")
-            .apply { isAccessible = true }
-            .getInt(controls.videoSurface())
-        assertEquals(MEDIA_OVERLAY_SUBLAYER, subLayer)
+    fun videoRendersInTheViewTree() {
+        assertTrue(controls.videoSurface() is TextureView)
     }
 
     /** Nothing of ours is painted where the creative is not, so transparent pixels show content. */
@@ -187,7 +186,7 @@ class ControlsTest {
         assertEquals(LinearLayout.HORIZONTAL, actionGroup().orientation)
         assertEquals(Gravity.START or Gravity.BOTTOM, gravity(actionGroup()))
         assertEquals(Gravity.START or Gravity.TOP, gravity(marking()))
-        assertEquals(Gravity.END or Gravity.TOP, gravity(skipButton()))
+        assertEquals(Gravity.END or Gravity.TOP, gravity(skipGroup()))
         assertFalse("overlay must not steal D-pad focus", root().isFocusable)
     }
 
@@ -200,7 +199,7 @@ class ControlsTest {
         presentVideo(videoChrome(skipEnabled = true))
 
         assertEquals(Gravity.END or Gravity.TOP, gravity(actionGroup()))
-        assertEquals(Gravity.START or Gravity.BOTTOM, gravity(skipButton()))
+        assertEquals(Gravity.START or Gravity.BOTTOM, gravity(skipGroup()))
         assertEquals(Gravity.END or Gravity.BOTTOM, gravity(marking()))
     }
 
@@ -313,6 +312,40 @@ class ControlsTest {
     }
 
     @Test
+    fun landingShownOnlyWithAClickThrough() {
+        controls.attachToContainer()
+        presentVideo(videoChrome(skipEnabled = true))
+        assertEquals(View.GONE, landingButton().visibility)
+
+        controls.updateControls(videoChrome(skipEnabled = true).copy(landingAvailable = true))
+        assertEquals(View.VISIBLE, landingButton().visibility)
+        assertEquals("Перейти", landingButton().text.toString())
+
+        val landing = landingButton()
+        landing.performClick()
+        assertEquals(1, landings)
+
+        controls.release()
+        landing.performClick()
+        assertEquals(1, landings)
+    }
+
+    /** Landing sits inside the skip corner, left of skip, and takes the D-pad on the way there. */
+    @Test
+    fun landingSitsLeftOfSkipInTheFocusChain() {
+        controls.attachToContainer()
+        presentVideo(videoChrome(skipEnabled = true).copy(landingAvailable = true))
+
+        val group = skipGroup()
+        assertEquals(0, group.indexOfChild(landingButton()))
+        assertEquals(1, group.indexOfChild(skipButton()))
+        assertEquals(landingButton().id, skipButton().nextFocusLeftId)
+        assertEquals(skipButton().id, landingButton().nextFocusRightId)
+        assertEquals(landingButton().id, pauseButton().nextFocusRightId)
+        assertEquals(pauseButton().id, landingButton().nextFocusLeftId)
+    }
+
+    @Test
     fun hostCanHidePause() {
         controls.attachToContainer()
         presentVideo(videoChrome(skipEnabled = true).copy(pauseAvailable = false))
@@ -341,6 +374,7 @@ class ControlsTest {
         marking = "РЕКЛАМА",
         skipLabel = skip,
         skipEnabled = skipEnabled,
+        landingLabel = "Перейти",
         muted = muted,
         paused = paused,
         pauseAvailable = true,
@@ -361,6 +395,11 @@ class ControlsTest {
 
     private fun skipButton() = root().findViewWithTag<android.widget.TextView>(Controls.TAG_SKIP)
 
+    private fun skipGroup() = root().findViewWithTag<LinearLayout>(Controls.TAG_SKIP_GROUP)
+
+    private fun landingButton() =
+        root().findViewWithTag<android.widget.TextView>(Controls.TAG_LANDING)
+
     private fun muteButton() = root().findViewWithTag<ImageView>(Controls.TAG_MUTE)
 
     private fun pauseButton() = root().findViewWithTag<ImageView>(Controls.TAG_PAUSE)
@@ -372,8 +411,4 @@ class ControlsTest {
     private fun root() = container.getChildAt(0) as FrameLayout
 
     private fun gravity(view: View) = (view.layoutParams as FrameLayout.LayoutParams).gravity
-
-    private companion object {
-        const val MEDIA_OVERLAY_SUBLAYER = -1
-    }
 }

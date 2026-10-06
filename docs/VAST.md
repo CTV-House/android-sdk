@@ -179,9 +179,10 @@ The first two are the ad server's to control: for a banner that holds 15 seconds
 
 ## 6. Click and ad marking
 
-`ClickThrough` (`CompanionClickThrough` for a banner) must be `http(s)`, or the info control does
-not appear. No browser is opened: the landing URL is shown as a QR code and `ClickTracking` is
-pinged on press. `CustomClick` is parsed but leads nowhere.
+`ClickThrough` (`CompanionClickThrough` for a banner) must be `http(s)`, or neither the info
+control nor the landing chip appears. The landing chip opens the URL in the device browser
+(not the host), pings `ClickTracking`, then closes the show. Info shows the same URL as a QR
+code and pings `ClickTracking` without closing. `CustomClick` is parsed but leads nowhere.
 
 The ERID for the marking chip is taken, in order of preference, from:
 

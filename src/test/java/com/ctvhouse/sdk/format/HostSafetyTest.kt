@@ -2,7 +2,7 @@ package com.ctvhouse.sdk.format
 
 import android.content.Context
 import android.os.Looper
-import android.view.SurfaceView
+import android.view.TextureView
 import com.ctvhouse.sdk.core.media.BitmapLoader
 import com.ctvhouse.sdk.core.net.Client
 import com.ctvhouse.sdk.core.player.VideoPlayer
@@ -43,7 +43,7 @@ class HostSafetyTest {
                 override fun play(
                     context: Context,
                     url: String,
-                    surfaceView: SurfaceView?,
+                    textureView: TextureView?,
                     onEnded: () -> Unit,
                     onError: (String) -> Unit,
                     onMutedChanged: ((Boolean) -> Unit)?,
@@ -78,7 +78,7 @@ class HostSafetyTest {
                 override fun play(
                     context: Context,
                     url: String,
-                    surfaceView: SurfaceView?,
+                    textureView: TextureView?,
                     onEnded: () -> Unit,
                     onError: (String) -> Unit,
                     onMutedChanged: ((Boolean) -> Unit)?,

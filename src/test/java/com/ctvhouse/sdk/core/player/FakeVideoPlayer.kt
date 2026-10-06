@@ -1,7 +1,7 @@
 package com.ctvhouse.sdk.core.player
 
 import android.content.Context
-import android.view.SurfaceView
+import android.view.TextureView
 
 /** Drives creative playback callbacks and position from the test instead of a real ExoPlayer. */
 internal class FakeVideoPlayer : VideoPlayer {
@@ -29,7 +29,7 @@ internal class FakeVideoPlayer : VideoPlayer {
     override fun play(
         context: Context,
         url: String,
-        surfaceView: SurfaceView?,
+        textureView: TextureView?,
         onEnded: () -> Unit,
         onError: (String) -> Unit,
         onMutedChanged: ((Boolean) -> Unit)?,

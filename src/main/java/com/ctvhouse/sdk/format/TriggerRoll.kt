@@ -295,6 +295,14 @@ class TriggerRoll internal constructor(
         showInfoQr()
     }
 
+    @VisibleForTesting
+    internal fun onLandingFromUi() {
+        if (!overlayActive || infoUrl == null) return
+        fireTrackers(clickTrackingUrls)
+        if (!openLanding()) return
+        finishDismiss(skipped = false)
+    }
+
     private fun sink(seq: Int): Sink = object : Sink {
         override fun deliverXml(vastXml: String) {
             onMain { if (stillWanted(seq)) startResolve(vastXml, seq) }
@@ -647,6 +655,7 @@ class TriggerRoll internal constructor(
                 onMuteToggle = { chrome.onMute() },
                 onPauseToggle = { chrome.onPause() },
                 onInfo = { chrome.onInfo() },
+                onLanding = { chrome.onLanding() },
             ),
         )
 
@@ -655,6 +664,7 @@ class TriggerRoll internal constructor(
             chrome.mute = ad::onMuteFromUi
             chrome.pause = ad::onPauseFromUi
             chrome.info = ad::onInfoFromUi
+            chrome.landing = ad::onLandingFromUi
         }
     }
 
@@ -663,15 +673,18 @@ class TriggerRoll internal constructor(
         var mute: (() -> Unit)? = null
         var pause: (() -> Unit)? = null
         var info: (() -> Unit)? = null
+        var landing: (() -> Unit)? = null
         fun onSkip() { skip?.invoke() }
         fun onMute() { mute?.invoke() }
         fun onPause() { pause?.invoke() }
         fun onInfo() { info?.invoke() }
+        fun onLanding() { landing?.invoke() }
         fun clear() {
             skip = null
             mute = null
             pause = null
             info = null
+            landing = null
         }
     }
 
